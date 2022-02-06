@@ -15,4 +15,37 @@ model User {
   email    String  @db.VarChar(255)
   password String
   username String? @db.VarChar(32)
+  votes    Vote[]
+  polls    Poll[]
+}
+
+model Poll {
+  id         String   @id @default(uuid())
+  title      String   @db.VarChar(32)
+  author     User     @relation(fields: [userId], references: [id])
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  modifiedAt DateTime @updatedAt
+  userId     String
+  options    Option[]
+  votes      Vote[]
+}
+
+model Option {
+  id     String @id @default(uuid())
+  title  String @db.VarChar(32)
+  Poll   Poll   @relation(fields: [pollId], references: [id])
+  pollId String
+  votes  Vote[]
+}
+
+model Vote {
+  voter    User   @relation(fields: [userId], references: [id])
+  poll     Poll   @relation(fields: [pollId], references: [id])
+  option   Option @relation(fields: [optionId], references: [id])
+  userId   String
+  pollId   String
+  optionId String
+
+  @@id([userId, pollId])
 }
