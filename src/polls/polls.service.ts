@@ -4,23 +4,23 @@ import { UpdatePollDto } from './dto/update-poll.dto';
 
 @Injectable()
 export class PollsService {
-  create(createPollDto: CreatePollDto) {
-    return 'This action adds a new poll';
-  }
-
-  findAll() {
+  getUserPolls() {
     return `This action returns all polls`;
   }
 
-  findOne(id: number) {
+  getPoll(id: number) {
     return `This action returns a #${id} poll`;
   }
 
-  update(id: number, updatePollDto: UpdatePollDto) {
+  createPoll(createPollDto: CreatePollDto) {
+    return 'This action adds a new poll';
+  }
+
+  updatePoll(id: number, updatePollDto: UpdatePollDto) {
     return `This action updates a #${id} poll`;
   }
 
-  remove(id: number) {
+  removePoll(id: number) {
     return `This action removes a #${id} poll`;
   }
 }
