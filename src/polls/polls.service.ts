@@ -11,8 +11,32 @@ export class PollsService {
     return `This action returns all polls`;
   }
 
-  getPoll(id: number) {
-    return `This action returns a #${id} poll`;
+  async getPoll(id: string): Promise<GetPollDto> {
+    const poll = await db.poll.findFirst({
+      where: { id },
+      include: {
+        options: {
+          include: {
+            votes: true,
+          },
+        },
+      },
+    });
+    const votes = await db.vote.count({ where: { pollId: poll.id } });
+
+    return {
+      id: poll.id,
+      title: poll.title,
+      expiresAt: poll.expiresAt.toISOString(),
+      createdAt: poll.createdAt.toISOString(),
+      modifiedAt: poll.modifiedAt.toISOString(),
+      options: poll.options.map((op) => ({
+        id: op.id,
+        title: op.title,
+        votes: op.votes.length,
+      })),
+      votes,
+    };
   }
 
   async createPoll(
