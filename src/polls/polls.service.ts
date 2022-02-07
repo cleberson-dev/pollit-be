@@ -90,6 +90,10 @@ export class PollsService {
     return `This action updates a #${id} poll`;
   }
 
+  async voteOnPoll(pollId: string, userId: string, optionId: string) {
+    await db.vote.create({ data: { pollId, userId, optionId } });
+  }
+
   async removePoll(id: string) {
     await db.poll.delete({ where: { id } });
   }
