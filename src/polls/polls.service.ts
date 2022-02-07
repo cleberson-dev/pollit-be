@@ -1,3 +1,4 @@
+import { GetUserPollsDto } from './dto/get-user-polls.dto';
 import { GetPollDto } from './dto/get-poll.dto';
 import { PrismaClient } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
@@ -7,8 +8,21 @@ import { UpdatePollDto } from './dto/update-poll.dto';
 const db = new PrismaClient();
 @Injectable()
 export class PollsService {
-  getUserPolls() {
-    return `This action returns all polls`;
+  async getUserPolls(userId: string): Promise<GetUserPollsDto[]> {
+    const userPolls = await db.poll.findMany({
+      where: { userId },
+      include: { votes: true, options: true },
+    });
+
+    return userPolls.map((poll) => ({
+      id: poll.id,
+      title: poll.title,
+      expiresAt: poll.expiresAt.toISOString(),
+      createdAt: poll.createdAt.toISOString(),
+      modifiedAt: poll.modifiedAt.toISOString(),
+      options: poll.options.length,
+      votes: poll.votes.length,
+    }));
   }
 
   async getPoll(id: string): Promise<GetPollDto> {
