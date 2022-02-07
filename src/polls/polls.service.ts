@@ -57,6 +57,16 @@ export class PollsService {
     { title, expiresAt, options }: CreatePollDto,
     userId: string,
   ): Promise<GetPollDto> {
+    // Check if expiration date is in future, with at least one day of duration
+    const expirationDateInMs = new Date(expiresAt).getTime();
+    const minimumHours = 24;
+    const minDuration = minimumHours * 60 * 60 * 1000;
+
+    if (expirationDateInMs <= Date.now() + minDuration)
+      throw new Error(
+        `Poll should be in future and have at least ${minimumHours} hours of duration.`,
+      );
+
     const createdPoll = await db.poll.create({
       data: {
         title,
