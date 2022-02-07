@@ -91,6 +91,11 @@ export class PollsService {
   }
 
   async voteOnPoll(pollId: string, userId: string, optionId: string) {
+    const poll = await db.poll.findFirst({ where: { id: pollId } });
+
+    if (poll.expiresAt.getTime() <= Date.now())
+      throw new Error('Already expired');
+
     await db.vote.create({ data: { pollId, userId, optionId } });
   }
 
