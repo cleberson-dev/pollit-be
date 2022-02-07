@@ -26,7 +26,24 @@ export class UsersService {
     };
   }
 
-  register(register: RegisterUserDto) {
-    return `This action registers a user`;
+  async register({
+    email,
+    password,
+    repeat_password,
+    username,
+  }: RegisterUserDto) {
+    if (password !== repeat_password) throw new Error('Passwords dont match');
+
+    const hashedPassword = await bcrypt
+      .genSalt(10)
+      .then((salt) => bcrypt.hash(password, salt));
+
+    const newUser = await db.user.create({
+      data: { email, password: hashedPassword, username },
+    });
+
+    return {
+      id: newUser.id,
+    };
   }
 }
