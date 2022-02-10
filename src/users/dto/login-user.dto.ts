@@ -1,9 +1,9 @@
-import { MaxLength, MinLength } from 'class-validator';
+import { MaxLength, MinLength } from 'class-validator'
 
 export class LoginUserDto {
-  emailOrUsername: string;
+  emailOrUsername: string
 
   @MinLength(8)
   @MaxLength(16)
-  password: string;
+  password: string
 }

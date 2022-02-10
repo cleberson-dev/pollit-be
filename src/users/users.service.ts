@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaClient, User } from '@prisma/client';
+import { Injectable } from '@nestjs/common'
+import { PrismaClient, User } from '@prisma/client'
 
-const db = new PrismaClient();
+const db = new PrismaClient()
 @Injectable()
 export class UsersService {
   async findUser(emailOrUsername: string): Promise<User | undefined> {
@@ -9,9 +9,9 @@ export class UsersService {
       where: {
         OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
       },
-    });
+    })
 
-    return user;
+    return user
   }
 
   async create({
@@ -19,9 +19,9 @@ export class UsersService {
     password,
     username,
   }: {
-    email: string;
-    password: string;
-    username?: string;
+    email: string
+    password: string
+    username?: string
   }) {
     const createdUser = await db.user.create({
       data: {
@@ -29,8 +29,8 @@ export class UsersService {
         password,
         username,
       },
-    });
+    })
 
-    return createdUser;
+    return createdUser
   }
 }

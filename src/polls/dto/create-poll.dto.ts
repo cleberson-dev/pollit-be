@@ -4,18 +4,18 @@ import {
   MinLength,
   ArrayMinSize,
   ArrayMaxSize,
-} from 'class-validator';
+} from 'class-validator'
 
 export class CreatePollDto {
   @MinLength(3)
   @MaxLength(32)
-  title: string;
+  title: string
 
   @IsDateString()
-  expiresAt: string;
+  expiresAt: string
 
   @ArrayMinSize(2)
   @ArrayMaxSize(4)
   @MaxLength(32, { each: true })
-  options: string[];
+  options: string[]
 }
