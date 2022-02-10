@@ -17,17 +17,17 @@ export class PollsController {
 
   @Get()
   getUserPolls() {
-    return this.pollsService.getUserPolls();
+    return this.pollsService.getUserPolls('asasd');
   }
 
   @Get(':id')
   getPoll(@Param('id') id: string) {
-    return this.pollsService.getPoll(+id);
+    return this.pollsService.getPoll(id);
   }
 
   @Post()
   create(@Body() createPollDto: CreatePollDto) {
-    return this.pollsService.createPoll(createPollDto);
+    return this.pollsService.createPoll(createPollDto, 'sdqweqwe');
   }
 
   @Patch(':id')
@@ -37,6 +37,6 @@ export class PollsController {
 
   @Delete(':id')
   removePoll(@Param('id') id: string) {
-    return this.pollsService.removePoll(+id);
+    return this.pollsService.removePoll(id);
   }
 }
