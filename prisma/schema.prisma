@@ -12,7 +12,7 @@ datasource db {
 
 model User {
   id       String  @id @default(uuid())
-  email    String  @db.VarChar(255)
+  email    String  @unique @db.VarChar(255)
   password String
   username String? @db.VarChar(32)
   votes    Vote[]
