@@ -1,11 +1,17 @@
 import { GetUserPollsDto } from './dto/get-user-polls.dto'
 import { GetPollDto } from './dto/get-poll.dto'
-import { PrismaClient } from '@prisma/client'
+import { Poll, Option, Vote, PrismaClient } from '@prisma/client'
 import { Injectable } from '@nestjs/common'
 import { CreatePollDto } from './dto/create-poll.dto'
 import { UpdatePollDto } from './dto/update-poll.dto'
 
 const db = new PrismaClient()
+
+type CompletePoll = Poll & {
+  options: (Option & {
+    votes: Vote[]
+  })[]
+}
 @Injectable()
 export class PollsService {
   async getUserPolls(userId: string): Promise<GetUserPollsDto[]> {
@@ -101,21 +107,33 @@ export class PollsService {
     }
   }
 
-  updatePoll(id: string, updatePollDto: UpdatePollDto, userId: string) {
-    return `This action updates a #${id} poll`
+  updatePoll(pollId: string, { type, payload }: UpdatePollDto, userId: string) {
+    switch (type) {
+      case 'vote':
+        return this.voteOnPoll(pollId, userId, payload.optionId)
+      default:
+        throw new Error('Type not found')
+    }
   }
 
   async voteOnPoll(pollId: string, userId: string, optionId: string) {
-    const poll = await db.poll.findFirst({ where: { id: pollId } })
+    const poll = await db.poll.findFirst({
+      where: { id: pollId },
+      include: { options: { include: { votes: true } } },
+    })
 
     if (poll.expiresAt.getTime() <= Date.now())
       throw new Error('Already expired')
 
     await db.vote.create({ data: { pollId, userId, optionId } })
+
+    return this.transformPoll(poll, userId)
   }
 
   async removePoll(pollId: string, userId: string) {
-    const poll = await db.poll.findFirst({ where: { id: pollId } })
+    const poll = await db.poll.findFirst({
+      where: { id: pollId },
+    })
 
     if (!poll) throw new Error('Poll not found')
     if (poll.userId !== userId)
@@ -124,5 +142,27 @@ export class PollsService {
     await db.vote.deleteMany({ where: { pollId } })
     await db.option.deleteMany({ where: { pollId } })
     await db.poll.delete({ where: { id: pollId } })
+  }
+
+  async transformPoll(poll: CompletePoll, userId: string) {
+    const votes = await db.vote.count({ where: { pollId: poll.id } })
+    const votedOption = (
+      await db.vote.findFirst({ where: { pollId: poll.id, userId } })
+    ).optionId
+
+    return {
+      id: poll.id,
+      title: poll.title,
+      expiresAt: poll.expiresAt.toISOString(),
+      createdAt: poll.createdAt.toISOString(),
+      modifiedAt: poll.modifiedAt.toISOString(),
+      options: poll.options.map((op) => ({
+        id: op.id,
+        title: op.title,
+        votes: op.votes.length,
+      })),
+      votes,
+      votedOption,
+    }
   }
 }

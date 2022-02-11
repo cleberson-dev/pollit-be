@@ -1,4 +1,6 @@
-import { PartialType } from '@nestjs/mapped-types'
-import { CreatePollDto } from './create-poll.dto'
+export type UpdatePollTypes = 'vote'
 
-export class UpdatePollDto extends PartialType(CreatePollDto) {}
+export class UpdatePollDto {
+  type: UpdatePollTypes
+  payload: any
+}

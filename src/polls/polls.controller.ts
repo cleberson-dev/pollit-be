@@ -39,14 +39,10 @@ export class PollsController {
   @Patch(':id')
   updatePoll(
     @Param('id') id: string,
-    @Body() updatePollDto: UpdatePollDto,
+    @Body() { type, payload }: UpdatePollDto,
     @Req() req,
   ) {
-    return this.pollsService.updatePoll(
-      id,
-      updatePollDto,
-      req.user.id as string,
-    )
+    return this.pollsService.updatePoll(id, { type, payload }, req.user.id)
   }
 
   @UseGuards(JwtAuthGuard)
