@@ -3,11 +3,11 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { UsersModule } from './users/users.module'
 import { PollsModule } from './polls/polls.module'
-import { EncryptionService } from './encryption/encryption.service'
+import { AuthModule } from './auth/auth.module'
 
 @Module({
-  imports: [UsersModule, PollsModule],
+  imports: [UsersModule, PollsModule, AuthModule],
   controllers: [AppController],
-  providers: [AppService, EncryptionService],
+  providers: [AppService],
 })
 export class AppModule {}
