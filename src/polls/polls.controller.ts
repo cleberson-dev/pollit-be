@@ -25,8 +25,8 @@ export class PollsController {
   }
 
   @Get(':id')
-  getPoll(@Param('id') id: string) {
-    return this.pollsService.getPoll(id)
+  getPoll(@Param('id') id: string, @Req() req) {
+    return this.pollsService.getPoll(id, req.user.id)
   }
 
   @UseGuards(JwtAuthGuard)

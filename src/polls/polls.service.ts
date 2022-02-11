@@ -22,10 +22,11 @@ export class PollsService {
       modifiedAt: poll.modifiedAt.toISOString(),
       options: poll.options.length,
       votes: poll.votes.length,
+      votedOption: poll.votes.find((vote) => vote.userId === userId)?.optionId,
     }))
   }
 
-  async getPoll(id: string): Promise<GetPollDto> {
+  async getPoll(id: string, userId: string): Promise<GetPollDto> {
     const poll = await db.poll.findFirst({
       where: { id },
       include: {
@@ -37,6 +38,9 @@ export class PollsService {
       },
     })
     const votes = await db.vote.count({ where: { pollId: poll.id } })
+    const votedOption = (
+      await db.vote.findFirst({ where: { pollId: poll.id, userId } })
+    ).optionId
 
     return {
       id: poll.id,
@@ -50,6 +54,7 @@ export class PollsService {
         votes: op.votes.length,
       })),
       votes,
+      votedOption,
     }
   }
 

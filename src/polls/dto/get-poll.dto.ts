@@ -12,4 +12,5 @@ export class GetPollDto {
   modifiedAt: string
   options: GetPollOptions[]
   votes: number
+  votedOption?: string
 }

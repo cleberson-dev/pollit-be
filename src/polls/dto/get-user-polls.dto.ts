@@ -6,4 +6,5 @@ export class GetUserPollsDto {
   modifiedAt: string
   options: number
   votes: number
+  votedOption?: string
 }
