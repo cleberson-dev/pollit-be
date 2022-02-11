@@ -1,3 +1,4 @@
+import { JwtAuthGuard } from './../auth/jwt-auth.guard'
 import {
   Controller,
   Get,
@@ -6,6 +7,8 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
+  UseGuards,
 } from '@nestjs/common'
 import { PollsService } from './polls.service'
 import { CreatePollDto } from './dto/create-poll.dto'
@@ -15,9 +18,10 @@ import { UpdatePollDto } from './dto/update-poll.dto'
 export class PollsController {
   constructor(private readonly pollsService: PollsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  getUserPolls() {
-    return this.pollsService.getUserPolls('asasd')
+  getUserPolls(@Req() req) {
+    return this.pollsService.getUserPolls(req.user.id as string)
   }
 
   @Get(':id')
@@ -25,18 +29,29 @@ export class PollsController {
     return this.pollsService.getPoll(id)
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createPollDto: CreatePollDto) {
-    return this.pollsService.createPoll(createPollDto, 'sdqweqwe')
+  create(@Body() createPollDto: CreatePollDto, @Req() req) {
+    return this.pollsService.createPoll(createPollDto, req.user.id as string)
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  updatePoll(@Param('id') id: string, @Body() updatePollDto: UpdatePollDto) {
-    return this.pollsService.updatePoll(+id, updatePollDto)
+  updatePoll(
+    @Param('id') id: string,
+    @Body() updatePollDto: UpdatePollDto,
+    @Req() req,
+  ) {
+    return this.pollsService.updatePoll(
+      id,
+      updatePollDto,
+      req.user.id as string,
+    )
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  removePoll(@Param('id') id: string) {
-    return this.pollsService.removePoll(id)
+  removePoll(@Param('id') id: string, @Req() req) {
+    return this.pollsService.removePoll(id, req.user.id as string)
   }
 }
