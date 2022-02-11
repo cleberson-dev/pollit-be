@@ -109,7 +109,15 @@ export class PollsService {
     await db.vote.create({ data: { pollId, userId, optionId } })
   }
 
-  async removePoll(id: string, userId: string) {
-    await db.poll.delete({ where: { id } })
+  async removePoll(pollId: string, userId: string) {
+    const poll = await db.poll.findFirst({ where: { id: pollId } })
+
+    if (!poll) throw new Error('Poll not found')
+    if (poll.userId !== userId)
+      throw new Error('Not allowed to delete this polll')
+
+    await db.vote.deleteMany({ where: { pollId } })
+    await db.option.deleteMany({ where: { pollId } })
+    await db.poll.delete({ where: { id: pollId } })
   }
 }
